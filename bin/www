@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+
+var app = require('../app');
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+var users = [];
+var userCount = -1;
+
+var speed = 5;
+
+io.on('connection', function (socket) {
+    var cU = ++userCount;
+    console.log('a user connected: ' + socket.id);
+
+    users[cU] = {
+        id: socket.id,
+        x: Math.floor(Math.random() * 500),
+        y: Math.floor(Math.random() * 500)
+    };
+
+    io.emit('init', users);
+    console.log(users);
+
+    socket.on('move', function (direction) {
+        switch (direction) {
+            case 'left':
+                users[cU].x -= speed;
+                break;
+            case 'right':
+                users[cU].x += speed;
+                break;
+            case 'up':
+                users[cU].y -= speed;
+                break;
+            case 'down':
+                users[cU].y += speed;
+                break;
+        }
+
+        io.emit('move', {
+            id: socket.id,
+            x: users[cU].x,
+            y: users[cU].y
+        });
+    });
+
+    socket.on('disconnect', function () {
+        for (var i = 0; i < users.length; i++) {
+            if (socket.id == users[i].id) {
+                users.splice(i, 1);
+                userCount--;
+                io.emit('removePlayer', socket.id);
+                break;
+            }
+        }
+    })
+});
+
+http.listen(3000, function () {
+    console.log('Listening on 3k');
+});

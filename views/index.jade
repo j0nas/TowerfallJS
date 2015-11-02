@@ -1,0 +1,45 @@
+extends layout
+
+block content
+    script(src='bower_components/socket.io-client/socket.io.js')
+    script.
+        var socket = io();
+        var initialized = false;
+        var id;
+
+        console.log(socket.id);
+        socket.on('move', function (data) {
+            var style = document.getElementById(data.id).style;
+            style.left = data.x + 'px';
+            style.top = data.y + 'px';
+        });
+
+        socket.on('init', function (users) {
+            if (!initialized) {
+                id = users[users.length - 1].id;
+
+                for (var i = 0; i < users.length; i++) {
+                    if (users[i].id == id) {
+                        document.body.innerHTML +=
+                                '<div id="' + users[i].id + '" style="width: 10px; height: 10px; background-color: blue; top: ' + users[i].y + 'px; left: ' + users[i].x + 'px; position: absolute"></div>';
+                    } else {
+                        document.body.innerHTML +=
+                                '<div id="' + users[i].id + '" style="width: 10px; height: 10px; background-color: red; top: ' + users[i].y + 'px; left: ' + users[i].x + 'px; position: absolute"></div>';
+                    }
+                }
+
+                initialized = true;
+            } else {
+                var user = users[users.length - 1];
+                document.body.innerHTML +=
+                        '<div id="' + user.id + '" style="width: 10px; height: 10px; background-color: red; top: ' + user.y + 'px; left: ' + user.x + 'px; position: absolute"></div>';
+            }
+        });
+
+        socket.on('removePlayer', function (id) {
+            document.getElementById(id).remove();
+        });
+
+        document.onkeydown = function (e) {
+            socket.emit('move', ['left', 'up', 'right', 'down'][e.keyCode - 37]);
+        }
