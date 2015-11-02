@@ -19,20 +19,18 @@ block content
                 id = users[users.length - 1].id;
 
                 for (var i = 0; i < users.length; i++) {
-                    if (users[i].id == id) {
-                        document.body.innerHTML +=
-                                '<div id="' + users[i].id + '" style="width: 10px; height: 10px; background-color: blue; top: ' + users[i].y + 'px; left: ' + users[i].x + 'px; position: absolute"></div>';
-                    } else {
-                        document.body.innerHTML +=
-                                '<div id="' + users[i].id + '" style="width: 10px; height: 10px; background-color: red; top: ' + users[i].y + 'px; left: ' + users[i].x + 'px; position: absolute"></div>';
-                    }
+                    document.body.innerHTML +=
+                            '<div id="' + users[i].id + '" style="width: 10px; height: 10px; background-color: ' +
+                            (users[i].id == id ? 'blue' : 'red') + '; top: ' + users[i].y + 'px; left: ' + users[i].x +
+                            'px; position: absolute"></div>';
                 }
 
                 initialized = true;
             } else {
                 var user = users[users.length - 1];
                 document.body.innerHTML +=
-                        '<div id="' + user.id + '" style="width: 10px; height: 10px; background-color: red; top: ' + user.y + 'px; left: ' + user.x + 'px; position: absolute"></div>';
+                        '<div id="' + user.id + '" style="width: 10px; height: 10px; background-color: red; top: ' +
+                        user.y + 'px; left: ' + user.x + 'px; position: absolute"></div>';
             }
         });
 
